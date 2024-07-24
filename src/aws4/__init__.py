@@ -491,6 +491,8 @@ def validate_challenge(
     signature_ = generate_signature(signing_key, challenge.string_to_sign)
 
     if signature_ != challenge.signature:
+        logger.debug("generated: %s", signature_)
+        logger.debug("challenge: %s", challenge.signature)
         msg = "Invalid signature"
         raise InvalidSignatureError(msg)
 
