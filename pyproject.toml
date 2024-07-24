@@ -1,0 +1,125 @@
+[tool.poetry]
+name = "auth-aws4"
+version = "0.0.0"
+description = "Client agnostic implementation of AWS4 signing schema."
+authors = [
+    "Daniel Edgecombe <daniel@nrwl.co>"
+]
+maintainers = [
+    "Daniel Edgecombe <daniel@nrwl.co>",
+]
+license = "Apache-2.0"
+repository="https://github.com/NRWLDev/auth-aws4/"
+homepage="https://github.com/NRWLDev/auth-aws4/"
+readme = "README.md"
+keywords = ["aws", "signing", "authorization"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3",
+]
+packages = [
+    { include = "aws4", from = "src"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+multidict = ">=4.0"
+
+
+[tool.poetry.dev-dependencies]
+
+# Tests
+freezegun = "^1.2.1"
+pytest = "~8.2.0"
+pytest-cov = "^5.0.0"
+pytest-random-order = "^1.1.0"
+coverage = "7.4.3"  # something breaks >7.4.4 and require passing `--cov-config=pyproject.toml` everywhere
+
+# Style
+ruff = "^0.4.0"
+pre-commit = "^3.0.2"
+
+[tool.changelog_gen]
+current_version = "0.0.0"
+reject_empty = true
+allowed_branches = [
+    "main",
+]
+date_format = "- %Y-%m-%d"
+issue_link = "https://github.com/NRWLDev/auth-aws4/issues/::issue_ref::"
+commit_link = "https://github.com/NRWLDev/auth-aws4/commit/::commit_hash::"
+
+[[tool.changelog_gen.files]]
+filename = "pyproject.toml"
+pattern = 'version = "{version}"'
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "--random-order",
+    "-p no:logging",
+]
+filterwarnings = [
+]
+markers = [
+]
+
+[tool.coverage.report]
+sort = "cover"
+fail_under = 95
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "if t.TYPE_CHECKING:",
+    'warn',
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src/aws4"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D100",
+    "D104",
+    "D107",
+    "ANN002",  # ParamSpec not available in 3.9
+    "ANN003",  # ParamSpec not available in 3.9
+    "FIX",  # allow TODO
+    "E501",  # Handled by ruff format
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tasks.py" = ["ANN", "E501", "INP001"]
+"tests/*" = ["ANN", "D", "S105", "S106", "SLF001", "S101", "PLR0913"]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.lint.isort]
+known-first-party = ["aws4"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[build-system]
+requires = ["poetry-core>=1.0"]
+build-backend = "poetry.core.masonry.api"
