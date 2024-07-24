@@ -1,6 +1,6 @@
 # Usecase agnostic implementation of AWS4 Sig v4
 
-This implemenation aims to be usecase agnostic. As such it accepts the
+This implementation aims to be usecase agnostic. As such it accepts the
 component pieces of a request rather than a full opinionated request object
 like `httpx.Request`.
 
@@ -29,7 +29,7 @@ validate_challenge(challenge, secret_key.secret_access_key)
 
 ### Signing
 
-An example of an httpx AWS4 request signing. In this example the `Authorization` header is injected into `request.headers` 
+An example of an httpx AWS4 request signing. In this example the `Authorization` header is injected into `request.headers`
 
 ```
 from datetime import datetime, timezone
