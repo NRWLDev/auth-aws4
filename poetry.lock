@@ -13,13 +13,13 @@ files = [
 
 [[package]]
 name = "changelog-gen"
-version = "0.11.9"
+version = "0.11.10"
 description = "Changelog generation tool"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "changelog_gen-0.11.9-py3-none-any.whl", hash = "sha256:f2ab8303f35bbb6b24c6c84fb2e3a1f067c3e0d03ebce38704a78b7e761b50b6"},
-    {file = "changelog_gen-0.11.9.tar.gz", hash = "sha256:5f3a3f8c7137ed250f5e53d1684f8fa06989a3ba66d7b57e89919aabb4d0685e"},
+    {file = "changelog_gen-0.11.10-py3-none-any.whl", hash = "sha256:65db09b805e6c425a8b836d366c2e0a156cf44033e0fbb3e85f223f6ccd5e475"},
+    {file = "changelog_gen-0.11.10.tar.gz", hash = "sha256:b6e42aa4451fb27fed09e8af748be2191a93a8921f905d1c10cf08ca13877bd7"},
 ]
 
 [package.dependencies]
