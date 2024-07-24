@@ -72,6 +72,7 @@ def test_generate_challenge_https():
 def test_validate_challenge():
     r = validate_challenge(
         Challenge(
+            algorithm="AWS4-HMAC-SHA256",
             scope="20230809/ksa/service/aws4_request",
             string_to_sign="""AWS4-HMAC-SHA256
 20230809T010203Z
@@ -108,6 +109,6 @@ def test_validate_challenge_invalid(invalid_key):
     kwargs[invalid_key] = invalid_value
 
     secret_access_key = kwargs.pop("secret_access_key")
-    challenge = Challenge(**kwargs)
+    challenge = Challenge(algorithm="AWS4-HMAC-SHA256", **kwargs)
     with pytest.raises(Exception, match="Invalid signature"):
         validate_challenge(challenge, secret_access_key)

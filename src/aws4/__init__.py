@@ -38,9 +38,26 @@ class InvalidSignatureError(AWS4Exception):
 
 
 @dataclass
+class AuthSchema:
+    """Configuration for a supported schema."""
+
+    algorithm: str
+    header_prefix: str
+
+    @property
+    def schema(self: t.Self) -> str:
+        """Extract the algorithm prefix."""
+        return self.algorithm.split("-")[0]
+
+
+AWSAuthSchema = AuthSchema("AWS4-HMAC-SHA256", "x-amz")
+
+
+@dataclass
 class Challenge:
     """Components of a challenge for validation."""
 
+    algorithm: str
     scope: str
     string_to_sign: str
     signature: str
@@ -59,9 +76,9 @@ def _parse_authorization(authorization: str) -> tuple[str, str, str, str]:
     return auth_type, data["credential"], data["signedheaders"], data["signature"]
 
 
-def _parse_key_date(headers: multidict.CIMultiDict) -> str:
+def _parse_key_date(headers: multidict.CIMultiDict, prefix: str = "x-amz") -> str:
     """Extract date header and check for drift/replay attacks."""
-    key_date = headers.get("x-amz-date")
+    key_date = headers.get(f"{prefix}-date")
     if key_date is None:
         msg = "Missing supported date header"
         raise MissingHeaderError(msg)
@@ -356,19 +373,31 @@ def generate_challenge(
     url: str,
     headers: multidict.CIMultiDict,
     content: bytes | None,
+    supported_schemas: list = [AWSAuthSchema],  # noqa: B006
 ) -> Challenge:
-    """Generate a challenge from request components."""
-    auth_type, credential, signed_headers, signature = _parse_authorization(headers["Authorization"])
+    """Generate a challenge from request components.
+
+    Args:
+    ----
+        method: Http request method
+        url: Full url being called (querystring included)
+        headers: Http request headers
+        content: Http request content
+        supported_schemas: List of supported algorithm/header prefix settings.
+    """
+    _schemas = {as_.algorithm: as_ for as_ in supported_schemas}
+    algorithm, credential, signed_headers, signature = _parse_authorization(headers["Authorization"])
+    auth_schema = _schemas[algorithm]
 
     content_sha256 = (
         sha256_hash(content)
-        if headers.get("x-amz-content-sha256", "UNSIGNED-PAYLOAD") != "UNSIGNED-PAYLOAD"
+        if headers.get(f"{auth_schema.header_prefix}-content-sha256", "UNSIGNED-PAYLOAD") != "UNSIGNED-PAYLOAD"
         else "UNSIGNED-PAYLOAD"
     )
 
     access_key_id, scope = credential.split("/", maxsplit=1)
     date, region, service_name = scope.split("/")[:-1]
-    key_date = _parse_key_date(headers)
+    key_date = _parse_key_date(headers, auth_schema.header_prefix)
 
     canonical_request_hash = _recreate_canonical_request_hash(
         method,
@@ -378,9 +407,10 @@ def generate_challenge(
         content_sha256,
     )
 
-    string_to_sign = f"{auth_type}\n{key_date}\n{scope}\n{canonical_request_hash}"
+    string_to_sign = f"{auth_schema.algorithm}\n{key_date}\n{scope}\n{canonical_request_hash}"
 
     return Challenge(
+        algorithm,
         scope,
         string_to_sign,
         signature,
@@ -393,6 +423,7 @@ def generate_signing_key(
     date: str,
     region: str,
     service_name: str,
+    schema: str = "AWS4",
 ) -> str:
     """Generate a signing key.
 
@@ -409,7 +440,7 @@ def generate_signing_key(
     HMAC-SHA256(DateRegionServiceKey, "aws4_request")
     """
     date_key = _hmac_hash(
-        ("AWS4" + secret_access_key).encode(),
+        (schema + secret_access_key).encode(),
         date.encode(),
     )
     date_region_key = _hmac_hash(date_key, region.encode())
@@ -417,7 +448,7 @@ def generate_signing_key(
         date_region_key,
         service_name.encode(),
     )
-    return _hmac_hash(date_region_service_key, b"aws4_request")
+    return _hmac_hash(date_region_service_key, f"{schema.lower()}_request".encode())
 
 
 def generate_signature(signing_key: str, string_to_sign: str) -> str:
@@ -432,6 +463,7 @@ def generate_signature(signing_key: str, string_to_sign: str) -> str:
 def validate_challenge(
     challenge: Challenge,
     secret_access_key: str,
+    supported_schemas: list = [AWSAuthSchema],  # noqa: B006
 ) -> None:
     """Validate a provided challenge was signed by provided secret key.
 
@@ -439,17 +471,21 @@ def validate_challenge(
     ----
         challenge: Generated challenge for a request
         secret_access_key: Key pair private component
+        supported_schemas: List of supported algorithm/header prefix settings.
 
     Raises:
     ------
         InvalidSignatureError: Provided signature and generated signature do not match.
     """
+    _schemas = {as_.algorithm: as_ for as_ in supported_schemas}
+    auth_schema = _schemas[challenge.algorithm]
     date, region, service_name = challenge.scope.split("/")[:-1]
     signing_key = generate_signing_key(
         secret_access_key,
         date,
         region,
         service_name,
+        auth_schema.schema,
     )
 
     signature_ = generate_signature(signing_key, challenge.string_to_sign)
@@ -469,6 +505,7 @@ def sign_request(  # noqa: PLR0913
     access_key_id: str,
     secret_access_key: str,
     date: datetime.datetime,
+    auth_schema: AuthSchema = AWSAuthSchema,
 ) -> multidict.CIMultiDict:
     """Sign request components with given access key pair.
 
@@ -483,6 +520,7 @@ def sign_request(  # noqa: PLR0913
         access_key_id: Key pair public component
         secret_access_key: Key pair private component
         date: Request date time
+        auth_schema: Optional custom schema definition
 
     Returns:
     -------
@@ -493,11 +531,11 @@ def sign_request(  # noqa: PLR0913
     logger.debug("headers: %s", headers)
 
     content_sha256 = sha256_hash(content) if url.scheme == "http" else "UNSIGNED-PAYLOAD"
-    content_header = "x-amz-content-sha256"
+    content_header = f"{auth_schema.header_prefix}-content-sha256"
     if content_header not in headers:
         headers[content_header] = content_sha256
 
-    scope = f"{to_signer_date(date)}/{region}/{service_name}/aws4_request"
+    scope = f"{to_signer_date(date)}/{region}/{service_name}/{auth_schema.schema.lower()}_request"
     logger.debug("scope: %s", scope)
 
     canonical_request_hash, signed_headers = _generate_canonical_request_hash(
@@ -506,7 +544,7 @@ def sign_request(  # noqa: PLR0913
         headers,
         content_sha256,
     )
-    string_to_sign = f"AWS4-HMAC-SHA256\n{to_amz_date(date)}\n{scope}\n{canonical_request_hash}"
+    string_to_sign = f"{auth_schema.algorithm}\n{to_amz_date(date)}\n{scope}\n{canonical_request_hash}"
     logger.debug("string_to_sign: %s", string_to_sign)
 
     signing_key = generate_signing_key(
@@ -514,6 +552,7 @@ def sign_request(  # noqa: PLR0913
         to_signer_date(date),
         region,
         service_name,
+        auth_schema.schema,
     )
     logger.debug("signing_key: %s", signing_key)
 
@@ -521,6 +560,6 @@ def sign_request(  # noqa: PLR0913
     logger.debug("generated_signature: %s", signature)
 
     headers["Authorization"] = (
-        f"AWS4-HMAC-SHA256 Credential={access_key_id}/{scope}, SignedHeaders={signed_headers}, Signature={signature}"
+        f"{auth_schema.algorithm} Credential={access_key_id}/{scope}, SignedHeaders={signed_headers}, Signature={signature}"
     )
     return headers
