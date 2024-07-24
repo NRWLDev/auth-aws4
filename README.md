@@ -72,4 +72,6 @@ with httpx.Client() as client:
 
 ## Extra credit
 
-Thanks to @ozzzzz and @ivanmisic for work on the initial httpx/fastapi implementations this was extracted from.
+Thanks to [@ozzzzz] (https://www.github.com/ozzzzz) and
+[@ivanmisic](https://www.github.com/ivanmisic) for work on the initial
+httpx/fastapi implementations this was extracted from.
