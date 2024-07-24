@@ -3,16 +3,7 @@ from unittest import mock
 import pytest
 from freezegun import freeze_time
 
-from aws4 import Challenge, _parse_authorization, generate_challenge, validate_challenge
-
-
-def test_parse_authorization():
-    authorization = "AWS4-HMAC-SHA256 Credential=AKIA0SYLV9QT8A6LKRD6/20230809/ksa/iam/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb"
-    auth_type, credential, signed_headers, signature = _parse_authorization(authorization)
-    assert auth_type == "AWS4-HMAC-SHA256"
-    assert credential == "AKIA0SYLV9QT8A6LKRD6/20230809/ksa/iam/aws4_request"
-    assert signed_headers == "host;x-amz-content-sha256;x-amz-date"
-    assert signature == "297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb"
+from aws4 import AuthSchema, Challenge, generate_challenge, validate_challenge
 
 
 @freeze_time("2023-08-09T01:02:03Z")
@@ -30,6 +21,7 @@ def test_generate_challenge():
         content=b"somecontent",
     )
 
+    assert challenge.algorithm == "AWS4-HMAC-SHA256"
     assert challenge.access_key_id == "access-key"
     assert challenge.scope == "20230809/ksa/service/aws4_request"
     assert (
@@ -37,6 +29,35 @@ def test_generate_challenge():
         == """AWS4-HMAC-SHA256
 20230809T010203Z
 20230809/ksa/service/aws4_request
+651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e"""
+    )
+    assert challenge.signature == "342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc"
+
+
+@freeze_time("2023-08-09T01:02:03Z")
+def test_generate_challenge_custom_algorithm():
+    challenge = generate_challenge(
+        method="PUT",
+        url=mock.Mock(scheme="http", path="/my/path", query=b"foo=bar"),
+        headers={
+            "foo": "hello    world",
+            "BaZ": "wut",
+            "Authorization": "CUSTOM4-HMAC-SHA256 Credential=access-key/20230809/ksa/service/cust4_request, SignedHeaders=baz;foo, Signature=342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc",
+            "x-cust-date": "20230809T010203Z",
+            "x-cust-content-sha256": "651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e",
+        },
+        content=b"somecontent",
+        supported_schemas=[AuthSchema("CUSTOM4-HMAC-SHA256", "x-cust")],
+    )
+
+    assert challenge.algorithm == "CUSTOM4-HMAC-SHA256"
+    assert challenge.access_key_id == "access-key"
+    assert challenge.scope == "20230809/ksa/service/cust4_request"
+    assert (
+        challenge.string_to_sign
+        == """CUSTOM4-HMAC-SHA256
+20230809T010203Z
+20230809/ksa/service/cust4_request
 651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e"""
     )
     assert challenge.signature == "342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc"
@@ -81,6 +102,24 @@ def test_validate_challenge():
             signature="342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc",
         ),
         secret_access_key="secret-key",
+    )
+
+    assert r is None
+
+
+def test_validate_challenge_custom_algorithm():
+    r = validate_challenge(
+        Challenge(
+            algorithm="XXX4-HMAC-SHA256",
+            scope="20230809/ksa/service/xxx4_request",
+            string_to_sign="""XXX4-HMAC-SHA256
+20230809T010203Z
+20230809/ksa/service/xxx4_request
+651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e""",
+            signature="2fad0489f8ff94db188cbad27aa2f8c52ee9873b91833cac67e529e7aecb49db",
+        ),
+        secret_access_key="secret-key",
+        supported_schemas=[AuthSchema("XXX4-HMAC-SHA256", "x-xxx")],
     )
 
     assert r is None

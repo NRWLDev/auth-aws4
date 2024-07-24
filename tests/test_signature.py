@@ -178,6 +178,32 @@ def test_sign_request():
     )
 
 
+def test_sign_request_custom_algorithm():
+    s = aws4.sign_request(
+        "s3",
+        "PUT",
+        "http://localhost:9004/signed",
+        "us-east-1",
+        multidict.CIMultiDict(
+            [
+                ("host", "localhost:9004"),
+                ("x-abc-content-sha256", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+                ("x-abc-date", "20230809T064301Z"),
+            ],
+        ),
+        b"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "AKIA0SYLV9QT8A6LKRD6",
+        "r9RUbOHNG1tSugb4IVvmTKBbJ8D3XQnJqI_pEPYK",
+        datetime(2023, 8, 9, 6, 43, 1, 67433, tzinfo=timezone.utc),
+        auth_schema=aws4.AuthSchema("ABC4-HMAC-SHA256", "x-abc"),
+    )
+
+    assert (
+        s["Authorization"]
+        == "ABC4-HMAC-SHA256 Credential=AKIA0SYLV9QT8A6LKRD6/20230809/us-east-1/s3/abc4_request, SignedHeaders=host;x-abc-content-sha256;x-abc-date, Signature=6d0f47bd38d4133835b8125998f6b2d27d98983062098244536028da76f600f2"
+    )
+
+
 def test_sign_request_injects_content_sha256():
     s = aws4.sign_request(
         "s3",
