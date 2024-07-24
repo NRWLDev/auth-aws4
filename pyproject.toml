@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "auth-aws4"
-version = "0.0.0"
+version = "0.1.0"
 description = "Client agnostic implementation of AWS4 signing schema."
 authors = [
     "Daniel Edgecombe <daniel@nrwl.co>"
@@ -54,7 +54,7 @@ ruff = "^0.4.0"
 pre-commit = "^3.0.2"
 
 [tool.changelog_gen]
-current_version = "0.0.0"
+current_version = "0.1.0"
 reject_empty = true
 allowed_branches = [
     "main",
