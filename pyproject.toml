@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "auth-aws4"
 version = "0.1.0"
-description = "Client agnostic implementation of AWS4 signing schema."
+description = "Usecase agnostic implementation of AWS4 signing schema."
 authors = [
     "Daniel Edgecombe <daniel@nrwl.co>"
 ]
