@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.2 - 2024-07-24
+
+### Features and Improvements
+
+- Add support for custom header algorithms [[00e905a](https://github.com/NRWLDev/auth-aws4/commit/00e905ac771ecfbd8d790575009b62a86b5bc424)]
+
 ## v0.1.1 - 2024-07-24
 
 ### Miscellaneous
