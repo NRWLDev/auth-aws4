@@ -50,7 +50,7 @@ coverage = "7.4.3"  # something breaks >7.4.4 and require passing `--cov-config=
 changelog-gen = "^0.11"
 
 # Style
-ruff = "^0.4.0"
+ruff = "^0.5.0"
 pre-commit = "^3.0.2"
 
 [tool.changelog_gen]
