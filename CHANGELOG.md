@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.3 - 2024-07-30
+
+### Bug fixes
+
+- Add dateutil as a dependency [[6b7bb14](https://github.com/NRWLDev/auth-aws4/commit/6b7bb147b759bb4225948a6cb5f2d29800e21efa)]
+
+### Miscellaneous
+
+- Add tests for custom algorithm support [[d6888e5](https://github.com/NRWLDev/auth-aws4/commit/d6888e5aeaeb8ec1643cb0f87292ca4c58361384)]
+
 ## v0.1.2 - 2024-07-24
 
 ### Features and Improvements
