@@ -36,6 +36,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.8"
 multidict = ">=4.0"
+python-dateutil = "^2"
 
 [tool.poetry.dev-dependencies]
 
