@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from unittest import mock
 
 import multidict
 import pytest
@@ -154,6 +155,31 @@ def test_generate_signing_key(secret_key, date, partition, service_name, expecte
 
 
 def test_sign_request():
+    s = aws4.sign_request(
+        "s3",
+        "PUT",
+        mock.Mock(scheme="http", path="/signed", query=b""),
+        "us-east-1",
+        multidict.CIMultiDict(
+            [
+                ("host", "localhost:9004"),
+                ("x-amz-content-sha256", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+                ("x-amz-date", "20230809T064301Z"),
+            ],
+        ),
+        b"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "AKIA0SYLV9QT8A6LKRD6",
+        "r9RUbOHNG1tSugb4IVvmTKBbJ8D3XQnJqI_pEPYK",
+        datetime(2023, 8, 9, 6, 43, 1, 67433, tzinfo=timezone.utc),
+    )
+
+    assert (
+        s["Authorization"]
+        == "AWS4-HMAC-SHA256 Credential=AKIA0SYLV9QT8A6LKRD6/20230809/us-east-1/s3/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb"
+    )
+
+
+def test_sign_request_url_string():
     s = aws4.sign_request(
         "s3",
         "PUT",

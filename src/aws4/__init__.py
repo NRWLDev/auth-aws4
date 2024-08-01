@@ -69,9 +69,6 @@ class URL(t.Protocol):
     def path(self) -> str:
         """The hierarchical path, such as the path to a file to download."""
 
-    def __str__(self) -> str:
-        """Represent the URL as a string."""
-
 
 @dataclass
 class Challenge:

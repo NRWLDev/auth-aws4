@@ -35,6 +35,34 @@ def test_generate_challenge():
 
 
 @freeze_time("2023-08-09T01:02:03Z")
+def test_generate_challenge_url_string():
+    challenge = generate_challenge(
+        method="PUT",
+        url="http://localhost/my/path?foo=bar",
+        headers={
+            "foo": "hello    world",
+            "BaZ": "wut",
+            "Authorization": "AWS4-HMAC-SHA256 Credential=access-key/20230809/ksa/service/aws4_request, SignedHeaders=baz;foo, Signature=342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc",
+            "x-amz-date": "20230809T010203Z",
+            "x-amz-content-sha256": "651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e",
+        },
+        content=b"somecontent",
+    )
+
+    assert challenge.algorithm == "AWS4-HMAC-SHA256"
+    assert challenge.access_key_id == "access-key"
+    assert challenge.scope == "20230809/ksa/service/aws4_request"
+    assert (
+        challenge.string_to_sign
+        == """AWS4-HMAC-SHA256
+20230809T010203Z
+20230809/ksa/service/aws4_request
+651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e"""
+    )
+    assert challenge.signature == "342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc"
+
+
+@freeze_time("2023-08-09T01:02:03Z")
 def test_generate_challenge_custom_algorithm():
     challenge = generate_challenge(
         method="PUT",
