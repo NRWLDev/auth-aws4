@@ -52,7 +52,7 @@ def http_aws4_auth(request: httpx.Request):
     aws4.sign_request(
         service,
         request.method,
-        str(request.url),
+        request.url,
         region,
         request.headers,
         body,
