@@ -12,10 +12,6 @@ from dataclasses import dataclass
 
 from dateutil import parser
 
-if t.TYPE_CHECKING:
-    import multidict
-
-
 logger = logging.getLogger(__name__)
 
 _MULTI_SPACE_REGEX = re.compile(r"( +)")
@@ -53,6 +49,30 @@ class AuthSchema:
 AWSAuthSchema = AuthSchema("AWS4-HMAC-SHA256", "x-amz")
 
 
+class URL(t.Protocol):
+    """Abstract definition of a URL object suitable for AWS4 signing."""
+
+    @property
+    def scheme(self) -> str:
+        """Specified URL scheme for the request."""
+
+    @property
+    def query(self) -> str:
+        """URL query component.
+
+        The query component, that contains non-hierarchical data, that along with data
+        in path component, identifies a resource in the scope of URI's scheme and
+        network location.
+        """
+
+    @property
+    def path(self) -> str:
+        """The hierarchical path, such as the path to a file to download."""
+
+    def __str__(self) -> str:
+        """Represent the URL as a string."""
+
+
 @dataclass
 class Challenge:
     """Components of a challenge for validation."""
@@ -76,7 +96,7 @@ def _parse_authorization(authorization: str) -> tuple[str, str, str, str]:
     return auth_type, data["credential"], data["signedheaders"], data["signature"]
 
 
-def _parse_key_date(headers: multidict.CIMultiDict, prefix: str = "x-amz") -> str:
+def _parse_key_date(headers: t.Mapping[str, str], prefix: str = "x-amz") -> str:
     """Extract date header and check for drift/replay attacks."""
     key_date = headers.get(f"{prefix}-date")
     if key_date is None:
@@ -144,7 +164,7 @@ def to_signer_date(value: datetime) -> str:
     return _to_utc(value).strftime("%Y%m%d")
 
 
-def _generate_canonical_headers(headers: multidict.CIMultiDict) -> tuple[str, str]:
+def _generate_canonical_headers(headers: t.Mapping[str, str]) -> tuple[str, str]:
     """Get canonical headers.
 
     CanonicalHeaders -
@@ -171,7 +191,7 @@ def _generate_canonical_headers(headers: multidict.CIMultiDict) -> tuple[str, st
     return canonical_headers, signed_headers
 
 
-def _recreate_canonical_headers(headers: multidict.CIMultiDict, signed_headers: str) -> str:
+def _recreate_canonical_headers(headers: t.Mapping[str, str], signed_headers: str) -> str:
     """Generate canonical headers from SignedHeaders.
 
     SignedHeaders -
@@ -217,8 +237,8 @@ def _generate_canonical_query_string(query: bytes | str) -> str:
 
 def _generate_canonical_request_hash(
     method: str,
-    url: str,
-    headers: multidict.CIMultiDict,
+    url: URL,
+    headers: t.Mapping[str, str],
     content_sha256: str,
 ) -> tuple[str, str]:
     r"""Get canonical request hash.
@@ -291,8 +311,8 @@ def _generate_canonical_request_hash(
 
 def _recreate_canonical_request_hash(
     method: str,
-    url: str,
-    headers: multidict.CIMultiDict,
+    url: URL,
+    headers: t.Mapping[str, str],
     signed_headers: str,
     content_sha256: str,
 ) -> str:
@@ -370,9 +390,9 @@ def _recreate_canonical_request_hash(
 
 def generate_challenge(
     method: str,
-    url: str,
-    headers: multidict.CIMultiDict,
-    content: bytes | None,
+    url: str | URL,
+    headers: t.Mapping[str, str],
+    content: str | bytes | None,
     supported_schemas: list = [AWSAuthSchema],  # noqa: B006
 ) -> Challenge:
     """Generate a challenge from request components.
@@ -381,10 +401,12 @@ def generate_challenge(
     ----
         method: Http request method
         url: Full url being called (querystring included)
-        headers: Http request headers
+        headers: Http request headers, case insensitive multidict
         content: Http request content
         supported_schemas: List of supported algorithm/header prefix settings.
     """
+    if isinstance(url, str):
+        url = urllib.parse.urlparse(url)
     _schemas = {as_.algorithm: as_ for as_ in supported_schemas}
     algorithm, credential, signed_headers, signature = _parse_authorization(headers["Authorization"])
     auth_schema = _schemas[algorithm]
@@ -500,15 +522,15 @@ def validate_challenge(
 def sign_request(  # noqa: PLR0913
     service_name: str,
     method: str,
-    url: str,
+    url: str | URL,
     region: str,
-    headers: multidict.CIMultiDict,
-    content: bytes | None,
+    headers: t.Mapping[str, str],
+    content: str | bytes | None,
     access_key_id: str,
     secret_access_key: str,
     date: datetime.datetime,
     auth_schema: AuthSchema = AWSAuthSchema,
-) -> multidict.CIMultiDict:
+) -> t.Mapping[str, str]:
     """Sign request components with given access key pair.
 
     Args:
@@ -517,7 +539,7 @@ def sign_request(  # noqa: PLR0913
         method: Http request method
         url: Full url being called (querystring included)
         region: Service region
-        headers: Http request headers
+        headers: Http request headers, case insensitive multidict
         content: Http request content
         access_key_id: Key pair public component
         secret_access_key: Key pair private component
@@ -528,7 +550,8 @@ def sign_request(  # noqa: PLR0913
     -------
         Original headers with Authorization injected.
     """
-    url = urllib.parse.urlparse(url)
+    if isinstance(url, str):
+        url = urllib.parse.urlparse(url)
     logger.debug("url: %s", url)
     logger.debug("headers: %s", headers)
 
