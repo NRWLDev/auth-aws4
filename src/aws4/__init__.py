@@ -149,17 +149,17 @@ def _quote(
     ).replace("%7E", "~")
 
 
-def _to_utc(value: datetime) -> datetime:
+def _to_utc(value: datetime.datetime) -> datetime.datetime:
     """Convert to UTC time if value is not naive."""
     return value.astimezone(datetime.timezone.utc).replace(tzinfo=None) if value.tzinfo else value
 
 
-def to_amz_date(value: datetime) -> str:
+def to_amz_date(value: datetime.datetime) -> str:
     """Format datetime into AMZ date formatted string."""
     return _to_utc(value).strftime("%Y%m%dT%H%M%SZ")
 
 
-def to_signer_date(value: datetime) -> str:
+def to_signer_date(value: datetime.datetime) -> str:
     """Format datetime into SignatureV4 date formatted string."""
     return _to_utc(value).strftime("%Y%m%d")
 
