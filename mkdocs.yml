@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+site_name: AWS4 Authorization signing
+site_url: https://nrwldev.github.io/auth-aws4/
+repo_name: auth-aws4
+repo_url: https://github.com/NRWLDev/auth-aws4
+nav:
+  - index.md
+  - usage.md
+  - custom.md
+theme:
+  name: material
+  favicon: favicon.svg
+  icon:
+    logo: fontawesome/solid/table-list
+    repo: fontawesome/brands/git-alt
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.tracking
+    - toc.follow
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+extra:
+  social:
+    - icon: fontawesome/solid/envelope
+      link: mailto:admin@nrwl.co
