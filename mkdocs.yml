@@ -29,5 +29,5 @@ markdown_extensions:
   - pymdownx.superfences
 extra:
   social:
-    - icon: fontawesome/solid/envelope
+    - icon: fontawesome/solid/lock
       link: mailto:admin@nrwl.co
