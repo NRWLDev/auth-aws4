@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.4 - 2024-08-01
+
+### Bug fixes
+
+- Fix datetime type hints. [[45ef312](https://github.com/NRWLDev/auth-aws4/commit/45ef312ec512b3535d194571aeb607f44d9ce726)]
+- Improve typing to support passing URL objects directly. [[e14ad65](https://github.com/NRWLDev/auth-aws4/commit/e14ad659494bba1799ee77465c692ccecfd98e5c)]
+
+### Miscellaneous
+
+- Add initial documentation. [[1b31d4a](https://github.com/NRWLDev/auth-aws4/commit/1b31d4a3d33ae60571e355c18a30590fb1470d21)]
+- Add tests for URL and str based urls. [[1aeeaa5](https://github.com/NRWLDev/auth-aws4/commit/1aeeaa5d5c25a6ba130675cb62bad5e25f152b5e)]
+
 ## v0.1.3 - 2024-07-30
 
 ### Bug fixes
