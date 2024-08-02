@@ -11,7 +11,7 @@ theme:
   name: material
   favicon: favicon.svg
   icon:
-    logo: fontawesome/solid/table-list
+    logo: fontawesome/solid/lock
     repo: fontawesome/brands/git-alt
   features:
     - navigation.instant
@@ -29,5 +29,5 @@ markdown_extensions:
   - pymdownx.superfences
 extra:
   social:
-    - icon: fontawesome/solid/lock
+    - icon: fontawesome/solid/envelope
       link: mailto:admin@nrwl.co
