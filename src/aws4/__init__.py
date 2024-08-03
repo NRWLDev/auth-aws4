@@ -57,7 +57,7 @@ class URL(t.Protocol):
         """Specified URL scheme for the request."""
 
     @property
-    def query(self) -> str:
+    def query(self) -> str | bytes:
         """URL query component.
 
         The query component, that contains non-hierarchical data, that along with data
