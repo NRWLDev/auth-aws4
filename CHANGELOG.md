@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.6 - 2024-08-03
+
+### Features and Improvements
+
+- Add httpx auth implementation with httpx.Request protocol for type hinting. [[54aba90](https://github.com/NRWLDev/auth-aws4/commit/54aba90fd2f88a36f93516891b2956f08866bddf)]
+
+### Miscellaneous
+
+- Fix type hints for URL protocol. [[3e1e5ec](https://github.com/NRWLDev/auth-aws4/commit/3e1e5ec8716878c2aab35602b951c8ff600ba8ec)]
+
 ## v0.1.5 - 2024-08-03
 
 ### Features and Improvements
