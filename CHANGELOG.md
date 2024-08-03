@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.5 - 2024-08-03
+
+### Features and Improvements
+
+- Add keypair generation utils [[#1](https://github.com/NRWLDev/auth-aws4/issues/1)] [[5da7743](https://github.com/NRWLDev/auth-aws4/commit/5da774396a9017e7560e7f177abaea5cd3164399)]
+
 ## v0.1.4 - 2024-08-01
 
 ### Bug fixes
