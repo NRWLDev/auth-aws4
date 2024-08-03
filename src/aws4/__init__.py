@@ -53,6 +53,10 @@ class URL(t.Protocol):
     """Abstract definition of a URL object suitable for AWS4 signing."""
 
     @property
+    def netloc(self) -> str | bytes:
+        """Network location where the request is made to."""
+
+    @property
     def scheme(self) -> str:
         """Specified URL scheme for the request."""
 

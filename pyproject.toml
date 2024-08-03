@@ -37,7 +37,7 @@ packages = [
 python = "^3.8"
 python-dateutil = "^2"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 
 # Tests
 freezegun = "^1.2.1"
