@@ -67,3 +67,16 @@ with httpx.Client() as client:
         auth=http_aws4_auth,
     )
 ```
+
+## Generate user keys
+
+To generate user key pairs, `aws4.key_pair` provides some helpful utility functions.
+
+```python
+import aws4.key_pair
+
+key_pair = aws4.key_pair.generate_key_pair()
+
+ak = key_pair.access_key_id
+sk = key_pair.secret_access_key
+```
