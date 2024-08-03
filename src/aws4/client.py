@@ -1,23 +1,8 @@
 from __future__ import annotations
 
-import typing as t
 from datetime import datetime, timezone
 
 import aws4
-
-
-class HttpxRequest(t.Protocol):  # noqa: D101
-    @property
-    def method(self) -> bytes | str: ...  # noqa: D102
-
-    @property
-    def url(self) -> aws4.URL: ...  # noqa: D102
-
-    @property
-    def content(self) -> bytes: ...  # noqa: D102
-
-    @property
-    def headers(self) -> t.Mapping[str, str]: ...  # noqa: D102
 
 
 class HttpxAWS4Auth:
@@ -35,7 +20,7 @@ class HttpxAWS4Auth:
         self.region = region
         self.schema = auth_schema
 
-    def __call__(self, request: HttpxRequest) -> HttpxRequest:
+    def __call__(self, request: "httpx.Request") -> "httpx.Request":  # noqa: UP037, F821
         """Generate authorization header."""
         dt = datetime.now(tz=timezone.utc)
         request.headers[f"{self.schema.header_prefix}-date"] = aws4.to_amz_date(dt)

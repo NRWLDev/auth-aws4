@@ -7,6 +7,17 @@ from aws4.client import HttpxAWS4Auth
 from aws4.key_pair import KeyPair
 
 
+def test_eq():
+    kp1 = KeyPair("access-key-id", "secret-access-key")
+    kp2 = KeyPair("access-key", "secret-access")
+    auth1 = HttpxAWS4Auth(kp1, "service", "region")
+    auth2 = HttpxAWS4Auth(kp1, "service", "region")
+    auth3 = HttpxAWS4Auth(kp2, "service", "region")
+
+    assert auth1 == auth2
+    assert auth1 != auth3
+
+
 @freeze_time("2024-01-02T03:04")
 def test_http_request(monkeypatch):
     monkeypatch.setattr(aws4, "generate_signature", mock.Mock(return_value="signature"))
