@@ -31,7 +31,7 @@ def test_http_request(monkeypatch):
         content=b"content",
         url=mock.Mock(netloc=b"hostname", query="", path="/path", scheme="http"),
     )
-    auth(request)
+    request = next(auth.auth_flow(request))
 
     assert request.headers == {
         "x-amz-date": "20240102T030400Z",
@@ -55,7 +55,7 @@ def test_https_request(monkeypatch):
         content=b"",
         url=mock.Mock(netloc=b"hostname", query="", path="/path", scheme="https"),
     )
-    auth(request)
+    request = next(auth.auth_flow(request))
 
     assert request.headers == {
         "x-amz-date": "20240102T030400Z",
@@ -78,7 +78,7 @@ def test_body_request(monkeypatch):
         content=b"content",
         url=mock.Mock(netloc=b"hostname", query="", path="/path", scheme="https"),
     )
-    auth(request)
+    request = next(auth.auth_flow(request))
 
     assert request.headers == {
         "x-amz-date": "20240102T030400Z",
