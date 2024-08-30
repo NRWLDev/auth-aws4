@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.7 - 2024-08-30
+
+### Features and Improvements
+
+- Implement httpx client using httpx.Auth instead of a callable. [[c5be7fc](https://github.com/NRWLDev/auth-aws4/commit/c5be7fcf32c33eea40c60e6992421df37149be85)]
+
 ## v0.1.6 - 2024-08-03
 
 ### Features and Improvements
