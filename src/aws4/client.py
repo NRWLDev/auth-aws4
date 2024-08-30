@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import typing as t
 from datetime import datetime, timezone
+
+try:
+    from httpx import Auth as HttpxAuth
+except ImportError:
+    HttpxAuth = object
 
 import aws4
 
 
-class HttpxAWS4Auth:
+class HttpxAWS4Auth(HttpxAuth):
     """AWS4-HMAC auth implementation for httpx."""
 
     def __init__(
@@ -20,8 +26,8 @@ class HttpxAWS4Auth:
         self.region = region
         self.schema = auth_schema
 
-    def __call__(self, request: "httpx.Request") -> "httpx.Request":  # noqa: UP037, F821
-        """Generate authorization header."""
+    def auth_flow(self: t.Self, request: "httpx.Request") -> t.Generator["httpx.Request", "httpx.Response", None]:  # noqa: UP037, F821
+        """Update the request, with signed headers."""
         dt = datetime.now(tz=timezone.utc)
         request.headers[f"{self.schema.header_prefix}-date"] = aws4.to_amz_date(dt)
         request.headers["host"] = request.url.netloc.decode("utf-8")
@@ -43,7 +49,7 @@ class HttpxAWS4Auth:
             self.schema,
         )
 
-        return request
+        yield request
 
     def __eq__(self, other: object) -> bool:  # noqa: D105
         return isinstance(other, HttpxAWS4Auth) and other.key_pair == self.key_pair
