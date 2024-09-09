@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.8 - 2024-09-09
+
+### Miscellaneous
+
+- Migrate from poetry to uv for dependency and build management [[5246097](https://github.com/NRWLDev/auth-aws4/commit/5246097c593b376276870cfccf86aa029928e53b)]
+- Update changelog-gen and related configuration. [[f8f51b9](https://github.com/NRWLDev/auth-aws4/commit/f8f51b9fa80530a2951cdad74b2f1b7d93057b10)]
+
 ## v0.1.7 - 2024-08-30
 
 ### Features and Improvements
