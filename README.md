@@ -1,4 +1,12 @@
 # Usecase agnostic implementation of AWS4 Sig v4
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![image](https://img.shields.io/pypi/v/auth-aws4.svg)](https://pypi.org/project/auth-aws4/)
+[![image](https://img.shields.io/pypi/l/auth-aws4.svg)](https://pypi.org/project/auth-aws4/)
+[![image](https://img.shields.io/pypi/pyversions/auth-aws4.svg)](https://pypi.org/project/auth-aws4/)
+![style](https://github.com/NRWLDev/auth-aws4/actions/workflows/style.yml/badge.svg)
+![tests](https://github.com/NRWLDev/auth-aws4/actions/workflows/tests.yml/badge.svg)
+[![codecov](https://codecov.io/gh/NRWLDev/auth-aws4/branch/main/graph/badge.svg)](https://codecov.io/gh/NRWLDev/auth-aws4)
 
 This implementation aims to be usecase agnostic. As such it accepts the
 component pieces of a request rather than a full opinionated request object
