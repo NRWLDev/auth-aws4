@@ -70,6 +70,36 @@ with httpx.Client() as client:
     )
 ```
 
+#### Builtin httpx client
+
+Currently there is only a builtin client for httpx, if you think there is a
+client implementation that would be useful to include, please raise an issue on
+github.
+
+```
+from datetime import datetime, timezone
+
+import aws4
+from aws4.key_pair import KeyPair
+from aws4.client import HttpxAWS4Auth
+
+
+auth = HttpxAWS4Auth(
+    KeyPair(
+        access_key_id="my-access-key-id",
+        secret_access_key="my-secret-access-key",
+    )
+    "s3",
+    "us-east-1",
+)
+
+with httpx.Client() as client:
+    r = client.request(
+        url="http://localhost",
+        auth=auth,
+    )
+```
+
 ## Extra credit
 
 Thanks to [@ozzzzz](https://www.github.com/ozzzzz) and
