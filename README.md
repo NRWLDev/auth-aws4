@@ -31,7 +31,7 @@ validate_challenge(challenge, secret_key.secret_access_key)
 
 An example of an httpx AWS4 request signing. In this example the `Authorization` header is injected into `request.headers`
 
-```
+```python
 from datetime import datetime, timezone
 
 import aws4
@@ -76,7 +76,7 @@ Currently there is only a builtin client for httpx, if you think there is a
 client implementation that would be useful to include, please raise an issue on
 github.
 
-```
+```python
 from datetime import datetime, timezone
 
 import aws4
