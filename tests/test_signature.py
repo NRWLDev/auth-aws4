@@ -84,7 +84,7 @@ def test_hmac_hash(key, data, hexdigest, expected):
         ({"Authorization": "ignored", "user-agent": "ignored", "foo": "bar"}, "foo:bar", "foo"),
         ({"foo": "bar", "baz": "wut"}, "baz:wut\nfoo:bar", "baz;foo"),
         ({"FOO": "hello world", "baz": "wut"}, "baz:wut\nfoo:hello world", "baz;foo"),
-        ({"foo": "hello    world", "BaZ": "wut"}, "baz:wut\nfoo:hello world", "baz;foo"),
+        ({"foo": "hello    world", "BaZ": "wut"}, "baz:wut\nfoo:hello world", "baz;foo"),  # pragma: no-spell-check
     ],
 )
 def test_generate_canonical_headers(headers, canonical_headers, signed_headers):

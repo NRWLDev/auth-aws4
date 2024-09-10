@@ -13,7 +13,7 @@ def test_generate_challenge():
         url=mock.Mock(scheme="http", path="/my/path", query=b"foo=bar"),
         headers={
             "foo": "hello    world",
-            "BaZ": "wut",
+            "BaZ": "wut",  # pragma: no-spell-check
             "Authorization": "AWS4-HMAC-SHA256 Credential=access-key/20230809/ksa/service/aws4_request, SignedHeaders=baz;foo, Signature=342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc",
             "x-amz-date": "20230809T010203Z",
             "x-amz-content-sha256": "651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e",
@@ -41,7 +41,7 @@ def test_generate_challenge_url_string():
         url="http://localhost/my/path?foo=bar",
         headers={
             "foo": "hello    world",
-            "BaZ": "wut",
+            "BaZ": "wut",  # pragma: no-spell-check
             "Authorization": "AWS4-HMAC-SHA256 Credential=access-key/20230809/ksa/service/aws4_request, SignedHeaders=baz;foo, Signature=342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc",
             "x-amz-date": "20230809T010203Z",
             "x-amz-content-sha256": "651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e",
@@ -69,7 +69,7 @@ def test_generate_challenge_custom_algorithm():
         url=mock.Mock(scheme="http", path="/my/path", query=b"foo=bar"),
         headers={
             "foo": "hello    world",
-            "BaZ": "wut",
+            "BaZ": "wut",  # pragma: no-spell-check
             "Authorization": "CUSTOM4-HMAC-SHA256 Credential=access-key/20230809/ksa/service/cust4_request, SignedHeaders=baz;foo, Signature=342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc",
             "x-cust-date": "20230809T010203Z",
             "x-cust-content-sha256": "651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e",
@@ -98,7 +98,7 @@ def test_generate_challenge_https():
         url=mock.Mock(scheme="http", path="/my/path", query=b"foo=bar"),
         headers={
             "foo": "hello    world",
-            "BaZ": "wut",
+            "BaZ": "wut",  # pragma: no-spell-check
             "Authorization": "AWS4-HMAC-SHA256 Credential=access-key/20230809/ksa/service/aws4_request, SignedHeaders=baz;foo, Signature=f9a71a1bcce70ed6b1a27726f254fa400500821c81ab0e900f3df8c6278ca6a3",
             "x-amz-date": "20230809T010203Z",
             "x-amz-content-sha256": "UNSIGNED-PAYLOAD",

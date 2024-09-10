@@ -57,7 +57,7 @@ def test_generate_canonical_request_hash():
     request_hash, signed_headers = _generate_canonical_request_hash(
         "GET",
         mock.Mock(path="/a/path", query=b"foo=bar"),
-        {"foo": "hello    world", "BaZ": "wut", "Authorization": "xxx"},
+        {"foo": "hello    world", "BaZ": "wut", "Authorization": "xxx"},  # pragma: no-spell-check
         "content-sha-256",
     )
 
@@ -69,7 +69,7 @@ def test_recreate_canonical_request_hash():
     request_hash = _recreate_canonical_request_hash(
         "GET",
         mock.Mock(path="/a/path", query=b"foo=bar"),
-        {"foo": "hello    world", "BaZ": "wut", "Authorization": "xxx"},
+        {"foo": "hello    world", "BaZ": "wut", "Authorization": "xxx"},  # pragma: no-spell-check
         "baz;foo",
         "content-sha-256",
     )
