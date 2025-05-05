@@ -35,6 +35,7 @@ dependencies = [
 
 [project.urls]
 homepage="https://github.com/NRWLDev/auth-aws4/"
+documentation="https://nrwldev.github.io/auth-aws4/"
 
 [project.optional-dependencies]
 dev = [
