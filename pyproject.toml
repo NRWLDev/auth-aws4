@@ -1,6 +1,6 @@
 [project]
 name = "auth-aws4"
-version = "0.1.8"
+version = "0.1.9"
 description = "Usecase agnostic implementation of AWS4 signing schema."
 authors = [
     {name = "Daniel Edgecombe", email = "daniel@nrwl.co"},
@@ -56,7 +56,7 @@ dev = [
 
 
 [tool.changelog_gen]
-current_version = "0.1.8"
+current_version = "0.1.9"
 reject_empty = true
 allowed_branches = [
     "main",

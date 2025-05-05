@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.9 - 2025-05-05
+
+### Bug fixes
+
+- Ensure urls render in pypi. [[c0d62bf](https://github.com/NRWLDev/auth-aws4/commit/c0d62bf5ba5b04bde1eb7c5fcb8c75cd7845be34)]
+
 ## v0.1.8 - 2024-09-09
 
 ### Miscellaneous
