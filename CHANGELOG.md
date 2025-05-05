@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.10 - 2025-05-05
+
+### Documentation
+
+- Add documentation url for pypi. [[7fd4eb8](https://github.com/NRWLDev/auth-aws4/commit/7fd4eb8d9db7d7829d0c994f2826e92384f8e6d8)]
+
 ## v0.1.9 - 2025-05-05
 
 ### Bug fixes
