@@ -9,8 +9,6 @@ maintainers = [
     {name = "Daniel Edgecombe", email = "daniel@nrwl.co"},
 ]
 license = "Apache-2.0"
-repository="https://github.com/NRWLDev/auth-aws4/"
-homepage="https://github.com/NRWLDev/auth-aws4/"
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = ["aws", "signing", "authorization"]
@@ -34,6 +32,9 @@ classifiers = [
 dependencies = [
     "python-dateutil>=2.0.0",
 ]
+
+[project.urls]
+homepage="https://github.com/NRWLDev/auth-aws4/"
 
 [project.optional-dependencies]
 dev = [
