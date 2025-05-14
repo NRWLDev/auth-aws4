@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.11 - 2025-05-14
+
+### Bug fixes
+
+- Validate authorization header format when parsing and raise on issues. [[436b3ac](https://github.com/NRWLDev/auth-aws4/commit/436b3acd680a5330dd3d52c04b12daa69e70b1fc)]
+
 ## v0.1.10 - 2025-05-05
 
 ### Documentation
