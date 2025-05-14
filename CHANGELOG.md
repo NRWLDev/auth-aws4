@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.12 - 2025-05-14
+
+### Bug fixes
+
+- Handle missing Authorization header cleanly. [[cd63442](https://github.com/NRWLDev/auth-aws4/commit/cd63442e5d58f44f7e29a2bd26e42624af5d15d2)]
+
 ## v0.1.11 - 2025-05-14
 
 ### Bug fixes
