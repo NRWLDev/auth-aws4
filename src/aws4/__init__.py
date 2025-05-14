@@ -29,6 +29,10 @@ class MissingHeaderError(AWS4Exception):
     """Missing required header."""
 
 
+class InvalidHeaderError(AWS4Exception):
+    """Invalid header."""
+
+
 class InvalidSignatureError(AWS4Exception):
     """Provided and generated signatures do not match."""
 
@@ -85,7 +89,7 @@ class Challenge:
     access_key_id: str | None = None
 
 
-def _parse_authorization(authorization: str) -> tuple[str, str, str, str]:
+def _parse_authorization(authorization: str, supported_schemas: list[str]) -> tuple[str, str, str, str]:
     """Extract credentials from AWS4 authorization header."""
     auth_type, _, credentials = authorization.partition(" ")
     parts = credentials.split(", ")
@@ -93,6 +97,10 @@ def _parse_authorization(authorization: str) -> tuple[str, str, str, str]:
     for part in parts:
         k, _, v = part.partition("=")
         data[k.lower()] = v
+
+    if auth_type not in supported_schemas or any(k not in data for k in ["credential", "signedheaders", "signature"]):
+        msg = "Invalid header format"
+        raise InvalidHeaderError(msg)
 
     return auth_type, data["credential"], data["signedheaders"], data["signature"]
 
@@ -409,7 +417,10 @@ def generate_challenge(
     if isinstance(url, str):
         url = urllib.parse.urlparse(url)
     _schemas = {as_.algorithm: as_ for as_ in supported_schemas}
-    algorithm, credential, signed_headers, signature = _parse_authorization(headers["Authorization"])
+    algorithm, credential, signed_headers, signature = _parse_authorization(
+        headers["Authorization"],
+        list(_schemas.keys()),
+    )
     auth_schema = _schemas[algorithm]
 
     content_sha256 = (

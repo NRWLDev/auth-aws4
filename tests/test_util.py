@@ -5,6 +5,7 @@ import multidict
 import pytest
 
 from aws4 import (
+    InvalidHeaderError,
     _generate_canonical_request_hash,
     _parse_authorization,
     _parse_key_date,
@@ -14,11 +15,25 @@ from aws4 import (
 
 def test_parse_authorization():
     authorization = "AWS4-HMAC-SHA256 Credential=AKIA0SYLV9QT8A6LKRD6/20230809/ksa/iam/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb"
-    auth_type, credential, signed_headers, signature = _parse_authorization(authorization)
+    auth_type, credential, signed_headers, signature = _parse_authorization(authorization, ["AWS4-HMAC-SHA256"])
     assert auth_type == "AWS4-HMAC-SHA256"
     assert credential == "AKIA0SYLV9QT8A6LKRD6/20230809/ksa/iam/aws4_request"
     assert signed_headers == "host;x-amz-content-sha256;x-amz-date"
     assert signature == "297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb"
+
+
+@pytest.mark.parametrize(
+    "authorization",
+    [
+        "Bearer bearer-token",
+        "AWS4-HMAC-SHA256 SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb",
+        "AWS4-HMAC-SHA256 Credential=AKIA0SYLV9QT8A6LKRD6/20230809/ksa/iam/aws4_request, Signature=297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb",
+        "AWS4-HMAC-SHA256 Credential=AKIA0SYLV9QT8A6LKRD6/20230809/ksa/iam/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date",
+    ],
+)
+def test_parse_authorization_invalid_auth_type(authorization):
+    with pytest.raises(InvalidHeaderError):
+        _parse_authorization(authorization, ["AWS4-HMAC-SHA256"])
 
 
 @pytest.mark.parametrize(
