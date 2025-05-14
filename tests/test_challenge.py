@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from freezegun import freeze_time
 
-from aws4 import AuthSchema, Challenge, generate_challenge, validate_challenge
+from aws4 import AuthSchema, Challenge, MissingHeaderError, generate_challenge, validate_challenge
 
 
 @freeze_time("2023-08-09T01:02:03Z")
@@ -32,6 +32,22 @@ def test_generate_challenge():
 651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e"""
     )
     assert challenge.signature == "342103018e8cccefa7bd30ec2f41cbb9f9c5e5c9e9e9b434b773b95dc7dd5cbc"
+
+
+@freeze_time("2023-08-09T01:02:03Z")
+def test_generate_challenge_no_auth_header():
+    with pytest.raises(MissingHeaderError):
+        generate_challenge(
+            method="PUT",
+            url=mock.Mock(scheme="http", path="/my/path", query=b"foo=bar"),
+            headers={
+                "foo": "hello    world",
+                "BaZ": "wut",  # pragma: no-spell-check
+                "x-amz-date": "20230809T010203Z",
+                "x-amz-content-sha256": "651c1a60e695ffb695a3eb972fe3a661c97d7fb573b8d0bbfb439a7879fd952e",
+            },
+            content=b"somecontent",
+        )
 
 
 @freeze_time("2023-08-09T01:02:03Z")

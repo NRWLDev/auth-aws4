@@ -417,8 +417,14 @@ def generate_challenge(
     if isinstance(url, str):
         url = urllib.parse.urlparse(url)
     _schemas = {as_.algorithm: as_ for as_ in supported_schemas}
+    try:
+        authorization = headers["Authorization"]
+    except KeyError as e:
+        msg = "Missing Authorization header"
+        raise MissingHeaderError(msg) from e
+
     algorithm, credential, signed_headers, signature = _parse_authorization(
-        headers["Authorization"],
+        authorization,
         list(_schemas.keys()),
     )
     auth_schema = _schemas[algorithm]

@@ -25,6 +25,7 @@ def test_parse_authorization():
 @pytest.mark.parametrize(
     "authorization",
     [
+        "",
         "Bearer bearer-token",
         "AWS4-HMAC-SHA256 SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb",
         "AWS4-HMAC-SHA256 Credential=AKIA0SYLV9QT8A6LKRD6/20230809/ksa/iam/aws4_request, Signature=297e52e0243a99ef3fd140f1c8a605593be6b742bd92b19a23acc97e0a2053bb",
