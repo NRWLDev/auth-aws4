@@ -53,26 +53,34 @@ def test_sha256_hash_bytes_in(input_data, expected):
 
 
 @pytest.mark.parametrize(
-    ("key", "data", "hexdigest", "expected"),
+    ("key", "data", "expected"),
     [
         (
             b"key",
             b"data",
-            False,
             b'P1\xfe=\x98\x9cm\x157\xa0\x13\xfans\x9d\xa24c\xfd\xae\xc3\xb7\x017\xd8(\xe3j\xce"\x1b\xd0',
         ),
-        (b"key", b"data", True, "5031fe3d989c6d1537a013fa6e739da23463fdaec3b70137d828e36ace221bd0"),
         (
             bytearray("key", "utf-8"),
             b"data",
-            False,
             b'P1\xfe=\x98\x9cm\x157\xa0\x13\xfans\x9d\xa24c\xfd\xae\xc3\xb7\x017\xd8(\xe3j\xce"\x1b\xd0',
         ),
-        (bytearray("key", "utf-8"), b"data", True, "5031fe3d989c6d1537a013fa6e739da23463fdaec3b70137d828e36ace221bd0"),
     ],
 )
-def test_hmac_hash(key, data, hexdigest, expected):
-    hmachash = aws4._hmac_hash(key, data, hexdigest=hexdigest)
+def test_hmac_hash(key, data, expected):
+    hmachash = aws4._hmac_hash(key, data)
+    assert hmachash == expected
+
+
+@pytest.mark.parametrize(
+    ("key", "data", "expected"),
+    [
+        (b"key", b"data", "5031fe3d989c6d1537a013fa6e739da23463fdaec3b70137d828e36ace221bd0"),
+        (bytearray("key", "utf-8"), b"data", "5031fe3d989c6d1537a013fa6e739da23463fdaec3b70137d828e36ace221bd0"),
+    ],
+)
+def test_hmac_hash_hex(key, data, expected):
+    hmachash = aws4._hmac_hash_hex(key, data)
     assert hmachash == expected
 
 

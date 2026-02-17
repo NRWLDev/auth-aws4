@@ -53,7 +53,7 @@ def test_parse_key_date_drift(drift):
         ],
     )
 
-    with pytest.raises(Exception, match="Replay/drift detected in date."):
+    with pytest.raises(Exception, match=r"Replay/drift detected in date."):
         _parse_key_date(headers)
 
 

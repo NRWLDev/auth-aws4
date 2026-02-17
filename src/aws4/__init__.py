@@ -6,7 +6,7 @@ import hmac
 import logging
 import re
 import typing as t
-import urllib
+import urllib.parse
 from collections import OrderedDict
 from dataclasses import dataclass
 
@@ -45,7 +45,7 @@ class AuthSchema:
     header_prefix: str
 
     @property
-    def schema(self: t.Self) -> str:
+    def schema(self) -> str:
         """Extract the algorithm prefix."""
         return self.algorithm.split("-")[0]
 
@@ -133,15 +133,22 @@ def sha256_hash(data: bytes | str | None) -> str:
     return sha256sum.decode() if isinstance(sha256sum, bytes) else sha256sum
 
 
+def _hmac_hash_hex(
+    key: bytes | bytearray,
+    data: bytes,
+) -> str:
+    """Generate HMacSHA256 digest of given key and data."""
+    hasher = hmac.new(key, data, hashlib.sha256)
+    return hasher.hexdigest()
+
+
 def _hmac_hash(
     key: bytes | bytearray,
     data: bytes,
-    *,
-    hexdigest: bool = False,
-) -> str | bytes:
+) -> bytes:
     """Generate HMacSHA256 digest of given key and data."""
     hasher = hmac.new(key, data, hashlib.sha256)
-    return hasher.hexdigest() if hexdigest else hasher.digest()
+    return hasher.digest()
 
 
 def _quote(
@@ -306,12 +313,7 @@ def _generate_canonical_request_hash(
     path = _quote(url.path or "/")
 
     canonical_request = (
-        f"{method}\n"
-        f"{path}\n"
-        f"{canonical_query_string}\n"
-        f"{canonical_headers}\n\n"
-        f"{signed_headers}\n"
-        f"{content_sha256}"
+        f"{method}\n{path}\n{canonical_query_string}\n{canonical_headers}\n\n{signed_headers}\n{content_sha256}"
     )
     logger.debug(canonical_request)
 
@@ -386,12 +388,7 @@ def _recreate_canonical_request_hash(
     path = _quote(url.path or "/")
 
     canonical_request = (
-        f"{method}\n"
-        f"{path}\n"
-        f"{canonical_query_string}\n"
-        f"{canonical_headers}\n\n"
-        f"{signed_headers}\n"
-        f"{content_sha256}"
+        f"{method}\n{path}\n{canonical_query_string}\n{canonical_headers}\n\n{signed_headers}\n{content_sha256}"
     )
 
     return sha256_hash(canonical_request)
@@ -436,7 +433,7 @@ def generate_challenge(
     )
 
     access_key_id, scope = credential.split("/", maxsplit=1)
-    date, region, service_name = scope.split("/")[:-1]
+    _date, _region, _service_name = scope.split("/")[:-1]
     key_date = _parse_key_date(headers, auth_schema.header_prefix)
 
     canonical_request_hash = _recreate_canonical_request_hash(
@@ -464,7 +461,7 @@ def generate_signing_key(
     region: str,
     service_name: str,
     schema: str = "AWS4",
-) -> str:
+) -> bytes:
     """Generate a signing key.
 
     DateKey -
@@ -491,13 +488,13 @@ def generate_signing_key(
     return _hmac_hash(date_region_service_key, f"{schema.lower()}_request".encode())
 
 
-def generate_signature(signing_key: str, string_to_sign: str) -> str:
+def generate_signature(signing_key: bytes, string_to_sign: str) -> str:
     """Generate signature.
 
     Signature -
     Hex(HMAX-SHA256(SigningKey, StringToSign))
     """
-    return _hmac_hash(signing_key, string_to_sign.encode(), hexdigest=True)
+    return _hmac_hash_hex(signing_key, string_to_sign.encode())
 
 
 def validate_challenge(
@@ -542,13 +539,13 @@ def sign_request(  # noqa: PLR0913
     method: str,
     url: str | URL,
     region: str,
-    headers: t.Mapping[str, str],
+    headers: t.MutableMapping[str, str],
     content: str | bytes | None,
     access_key_id: str,
     secret_access_key: str,
     date: datetime.datetime,
     auth_schema: AuthSchema = AWSAuthSchema,
-) -> t.Mapping[str, str]:
+) -> t.MutableMapping[str, str]:
     """Sign request components with given access key pair.
 
     Args:

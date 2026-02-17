@@ -5,13 +5,17 @@ from datetime import datetime, timezone
 
 try:
     from httpx import Auth as HttpxAuth
-except ImportError:
-    HttpxAuth = object
+except ImportError:  # pragma: no cover
+    HttpxAuth = object  # ty: ignore[invalid-assignment]
 
 import aws4
+import aws4.key_pair
+
+if t.TYPE_CHECKING:
+    import httpx
 
 
-class HttpxAWS4Auth(HttpxAuth):
+class HttpxAWS4Auth(HttpxAuth):  # noqa: PLW1641
     """AWS4-HMAC auth implementation for httpx."""
 
     def __init__(
@@ -26,7 +30,7 @@ class HttpxAWS4Auth(HttpxAuth):
         self.region = region
         self.schema = auth_schema
 
-    def auth_flow(self: t.Self, request: "httpx.Request") -> t.Generator["httpx.Request", "httpx.Response", None]:  # noqa: UP037, F821
+    def auth_flow(self, request: "httpx.Request") -> t.Generator["httpx.Request", "httpx.Response", None]:  # noqa: UP037
         """Update the request, with signed headers."""
         dt = datetime.now(tz=timezone.utc)
         request.headers[f"{self.schema.header_prefix}-date"] = aws4.to_amz_date(dt)

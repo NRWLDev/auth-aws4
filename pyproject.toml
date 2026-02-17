@@ -10,7 +10,7 @@ maintainers = [
 ]
 license = "Apache-2.0"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = ["aws", "signing", "authorization"]
 classifiers = [
     "Development Status :: 1 - Planning",
@@ -21,11 +21,10 @@ classifiers = [
     "Topic :: Internet",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3",
 ]
 
@@ -39,17 +38,19 @@ documentation="https://nrwldev.github.io/auth-aws4/"
 
 [project.optional-dependencies]
 dev = [
+    "httpx",
     # Tests
     "freezegun >= 1.2.1",
     "pytest >= 8.2.0",
     "pytest-cov >= 5.0.0",
     "pytest-random-order >= 1.1.0",
-    "coverage == 7.4.3",  # something breaks >7.4.4 and require passing `--cov-config=pyproject.toml` everywhere
+    "coverage >= 7.4.5",  # something breaks >7.4.4 and require passing `--cov-config=pyproject.toml` everywhere
     "multidict >=4.0",
 
     # Style
-    "ruff >= 0.6.4",
+    "ruff >= 0.15.1",
     "pre-commit >= 3.0.2",
+    "ty >= 0.0.17",
 
     # release
     "changelog-gen >= 0.12",
@@ -115,6 +116,7 @@ source = ["src/aws4"]
 [tool.ruff]
 line-length = 120
 target-version = "py38"
+output-format = "concise"
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -140,6 +142,9 @@ known-first-party = ["aws4"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ty.terminal]
+output-format = "concise"
 
 [build-system]
 requires = ["hatchling"]
