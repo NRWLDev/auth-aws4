@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.13 - 2026-03-06
+
+### Miscellaneous
+
+- Update to py3.13 support, drop EOL python versions. [[ccdd5c0](https://github.com/NRWLDev/auth-aws4/commit/ccdd5c03b203e42b097fb99273d3c9db65c61dbf)]
+
 ## v0.1.12 - 2025-05-14
 
 ### Bug fixes
